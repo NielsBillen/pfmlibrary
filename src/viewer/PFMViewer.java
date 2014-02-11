@@ -11,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
@@ -35,8 +36,18 @@ public class PFMViewer {
 	 */
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			System.out.println("usage: filename(s)");
-			return;
+			args = new File(".").list(new FilenameFilter() {
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see java.io.FilenameFilter#accept(java.io.File,
+				 * java.lang.String)
+				 */
+				@Override
+				public boolean accept(File arg0, String arg1) {
+					return arg1.endsWith(".pfm");
+				}
+			});
 		}
 
 		for (String filename : args) {
@@ -57,8 +68,7 @@ public class PFMViewer {
 	 * @throws IOException
 	 */
 	private synchronized static void open(final File file) throws IOException {
-		final BufferedImage image = PFMReader.read(file).toBufferedImage(
-				2.2);
+		final BufferedImage image = PFMReader.read(file).toBufferedImage(2.2);
 
 		// Create the frame.
 		final JFrame frame = new JFrame("PFMViewer: " + file.getName());

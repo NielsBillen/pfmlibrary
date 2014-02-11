@@ -38,6 +38,47 @@ public class PFMImage {
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	public int nbOfFloats() {
+		return floats.length;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isGrayScale() {
+		return nbOfFloats() == width * height;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isColor() {
+		return nbOfFloats() == 3 * width * height;
+	}
+
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public float[] getColorAt(int x, int y) {
+		if (gray) {
+			int o = y * width + x;
+			float c = getFloat(o);
+			return new float[] { c, c, c };
+		} else {
+			int o = 3 * (y * width + x);
+			return new float[] { getFloat(o), getFloat(o + 1), getFloat(o + 2) };
+		}
+	}
+
+	/**
 	 * Converts this PFM image to a BufferedImage.
 	 * 
 	 * @param gamma
@@ -45,11 +86,10 @@ public class PFMImage {
 	 * @return a buffered image.
 	 */
 	public BufferedImage toBufferedImage(double gamma) {
-
 		BufferedImage result = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
 
-		double inv_gamma =  1.0/gamma;
+		double inv_gamma = 1.0 / gamma;
 		double[] rgba = new double[] { 0, 0, 0, 255 };
 
 		for (int i = 0; i < width * height; ++i) {
