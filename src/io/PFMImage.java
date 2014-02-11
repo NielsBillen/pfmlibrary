@@ -21,11 +21,29 @@ public class PFMImage {
 	 * @param height
 	 * @param floats
 	 */
-	public PFMImage(int width, int height, float[] floats) {
+	public PFMImage(int width, int height, float[] floats)
+			throws IllegalArgumentException {
+		if (width <= 0)
+			throw new IllegalArgumentException(
+					"the width has to be larger than zero!");
+		if (height <= 0)
+			throw new IllegalArgumentException(
+					"the height has to be larger than zero!");
+		int resolution = width * height;
+		if (resolution != floats.length && 3 * resolution != floats.length)
+			throw new IllegalArgumentException(
+					"the number of floats must match the resolution of the image! the number of given floats is "
+							+ floats.length
+							+ " and should be "
+							+ resolution
+							+ " for a gray image or "
+							+ (3 * resolution)
+							+ " for a color image!");
+
 		this.width = width;
 		this.height = height;
 		this.floats = Arrays.copyOf(floats, floats.length);
-		this.gray = floats.length == width * height;
+		this.gray = floats.length == resolution;
 	}
 
 	/**
