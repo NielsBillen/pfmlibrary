@@ -47,9 +47,11 @@ public class PFMReader {
 		else if (header[0].contains("PF"))
 			type = 1;
 
-		if (type < 0)
+		if (type < 0) {
+			reader.close();
 			throw new IllegalArgumentException(
 					"header does not contain a valid PFM format!");
+		}
 
 		int width = -1, height = -1;
 		String[] dimension = header[1].split(" ");
@@ -57,19 +59,24 @@ public class PFMReader {
 			width = Integer.parseInt(dimension[0]);
 			height = Integer.parseInt(dimension[1]);
 		} catch (NumberFormatException e) {
+			reader.close();
 			throw new IllegalArgumentException(
 					"header does not contain a valid size!");
 		} catch (ArrayIndexOutOfBoundsException e) {
+			reader.close();
 			throw new IllegalArgumentException(
 					"header does not contain a valid size!");
 		}
-		if (width < 0 || height < 0)
+		if (width < 0 || height < 0) {
+			reader.close();
 			throw new IllegalArgumentException(
 					"header does not contain a valid size!");
+		}
 		float scale = -1;
 		try {
 			scale = Float.parseFloat(header[2]);
 		} catch (NumberFormatException e) {
+			reader.close();
 			throw new IllegalArgumentException(
 					"header does not contain a valid scale!");
 		}
@@ -94,7 +101,7 @@ public class PFMReader {
 		float[] floats = new float[samples * width * height];
 		for (int i = 0; i < samples * width * height; ++i)
 			floats[i] = buffer.getFloat() * inv_scale;
-		
+
 		return new PFMImage(width, height, floats);
 	}
 }
