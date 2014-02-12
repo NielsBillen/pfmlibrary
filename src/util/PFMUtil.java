@@ -1,6 +1,8 @@
 package util;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import io.PFMImage;
 
@@ -17,7 +19,7 @@ public class PFMUtil {
 	 * @param image2
 	 * @return
 	 */
-	public double MSE(PFMImage image1, PFMImage image2)
+	public static double MSE(PFMImage image1, PFMImage image2)
 			throws IllegalArgumentException {
 		if (image1.width != image2.width || image1.height != image2.height)
 			throw new IllegalArgumentException(
@@ -50,7 +52,7 @@ public class PFMUtil {
 			}
 		}
 
-		decimal = decimal.divide(new BigDecimal(image1.width * image1.height));
+		decimal = decimal.divide(new BigDecimal(image1.width * image1.height),new MathContext(100, RoundingMode.HALF_DOWN));
 
 		return decimal.doubleValue();
 	}
