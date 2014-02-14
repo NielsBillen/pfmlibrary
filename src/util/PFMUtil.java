@@ -52,8 +52,32 @@ public class PFMUtil {
 			}
 		}
 
-		decimal = decimal.divide(new BigDecimal(image1.width * image1.height),new MathContext(100, RoundingMode.HALF_DOWN));
+		decimal = decimal.divide(new BigDecimal(image1.width * image1.height),
+				new MathContext(100, RoundingMode.HALF_DOWN));
 
 		return decimal.doubleValue();
+	}
+
+	/**
+	 * 
+	 * @param image1
+	 * @param image2
+	 * @return
+	 */
+	public static PFMImage difference(PFMImage image1, PFMImage image2) {
+		if (image1.width != image2.width || image1.height != image2.height)
+			throw new IllegalArgumentException(
+					"the images do not have matching size!");
+		if (image1.gray != image2.gray)
+			throw new IllegalArgumentException(
+					"i am lazy and you cannot compare gray to color image!");
+
+		final int nbOfFloats = image1.nbOfFloats();
+		float[] floats = new float[nbOfFloats];
+
+		for (int i = 0; i < nbOfFloats; ++i)
+			floats[i] = Math.abs(image1.getFloat(i) - image2.getFloat(i));
+
+		return new PFMImage(image1.width, image1.height, floats);
 	}
 }
