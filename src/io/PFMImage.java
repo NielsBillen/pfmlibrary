@@ -42,8 +42,16 @@ public class PFMImage {
 
 		this.width = width;
 		this.height = height;
-		this.floats = Arrays.copyOf(floats, floats.length);
-		this.gray = floats.length == resolution;
+		this.gray = false;
+
+		if (floats.length == resolution) {
+			this.floats = new float[3 * resolution];
+			for (int i = 0; i < resolution; ++i)
+				for (int j = 0; j < 3; ++j)
+					this.floats[3 * i + j] = floats[i];
+		} else {
+			this.floats = Arrays.copyOf(floats, floats.length);
+		}
 	}
 
 	/**
