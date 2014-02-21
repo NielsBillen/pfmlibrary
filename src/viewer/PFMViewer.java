@@ -33,6 +33,7 @@ public class PFMViewer {
 	 * 
 	 * @param args
 	 *            Arguments for the program.
+	 * @throws IOException
 	 */
 	public static void main(String[] args) {
 		if (args.length == 0) {
@@ -52,6 +53,7 @@ public class PFMViewer {
 
 		for (String filename : args) {
 			try {
+				System.out.println(args);
 				File file = new File(filename);
 				open(file);
 			} catch (Exception e) {
