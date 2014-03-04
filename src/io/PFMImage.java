@@ -116,7 +116,7 @@ public class PFMImage {
 				BufferedImage.TYPE_INT_ARGB);
 
 		double inv_gamma = 1.0 / gamma;
-		double[] rgba = new double[] { 0, 0, 0, 255 };
+		int[] rgba = new int[] { 0, 0, 0, 255 };
 
 		for (int i = 0; i < width * height; ++i) {
 			if (gray) {
@@ -132,6 +132,9 @@ public class PFMImage {
 				result.getRaster().setPixel(i % width, height - 1 - i / width,
 						rgba);
 			}
+			for (int j = 0; j < 3; ++j)
+				if (rgba[j] < 0 || rgba[j] > 255)
+					throw new IllegalStateException();
 		}
 
 		return result;
@@ -147,12 +150,13 @@ public class PFMImage {
 	 *            repeated divisions).
 	 * @return the gamma corrected float within the range [0,255].
 	 */
-	public static float toInt(double f, double inv_gamma) {
-		if (f < 0)
-			return 0.f;
-		else if (f > 1)
-			return 255.f;
+	public static int toInt(double f, double inv_gamma) {
+		if (f < 0.0)
+			return 0;
+		else if (f > 1.0)
+			return 255;
 		else
-			return (float) (255.f * Math.pow(f, inv_gamma));
+			return Math.min(255,
+					Math.max(0, (int) (255.0 * Math.pow(f, inv_gamma))));
 	}
 }
