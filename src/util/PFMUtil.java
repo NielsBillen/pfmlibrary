@@ -23,7 +23,7 @@ public class PFMUtil {
 			throws IllegalArgumentException {
 		if (image1.width != image2.width || image1.height != image2.height)
 			throw new IllegalArgumentException(
-					"the images do not have matching size!");
+					"the images do not have matching size!" +image1.width+"x"+image1.height+" vs "+image2.width+"x"+image2.height);
 
 		BigDecimal decimal = new BigDecimal(0).setScale(100);
 
