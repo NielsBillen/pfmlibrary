@@ -1,5 +1,6 @@
 package viewer;
 
+import io.PFMImage;
 import io.PFMReader;
 
 import java.awt.Dimension;
@@ -13,8 +14,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -49,17 +53,80 @@ public class PFMViewer {
 					return arg1.endsWith(".pfm");
 				}
 			});
+
+			for (String filename : args) {
+				try {
+					System.out.println(args);
+					File file = new File(filename);
+					open(file);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			return;
 		}
 
-		for (String filename : args) {
+		int status = 0;
+		boolean recursive = false;
+		for (String argument : args) {
 			try {
-				System.out.println(args);
-				File file = new File(filename);
-				open(file);
+				if (argument.equals("--open"))
+					status = 0;
+				else if (argument.equals("--convert"))
+					status = 1;
+				else if (argument.equals("--r") || argument.equals("-r"))
+					recursive = true;
+				else {
+					File file = new File(argument);
+					List<File> files;
+					if (recursive)
+						files = recursive(file);
+					else {
+						files = new ArrayList<File>();
+						files.add(file);
+					}
+
+					for (File f : files) {
+						if (status == 0) {
+							open(f);
+						} else if (status == 1) {
+							PFMImage image = PFMReader.read(f);
+							BufferedImage buf = image.toBufferedImage(2.2);
+							ImageIO.write(buf, "png", new File(f
+									.getAbsolutePath().replace(".pfm", ".png")));
+							System.out.println("converted " + f.getName()
+									+ " to png...");
+						}
+					}
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 */
+	private static List<File> recursive(File file) {
+		List<File> result = new ArrayList<File>();
+		if (file.isFile() && file.getName().endsWith(".pfm"))
+			result.add(file);
+		else {
+			File[] files = file.listFiles();
+			for (File f : files) {
+				if (f.isDirectory())
+					result.addAll(recursive(f));
+				else if (f.getName().endsWith(".pfm"))
+					result.add(f);
+			}
+		}
+
+		return result;
+
 	}
 
 	/**

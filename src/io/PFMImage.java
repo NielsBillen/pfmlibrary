@@ -29,6 +29,7 @@ public class PFMImage {
 		if (height <= 0)
 			throw new IllegalArgumentException(
 					"the height has to be larger than zero!");
+
 		int resolution = width * height;
 		if (resolution != floats.length && 3 * resolution != floats.length)
 			throw new IllegalArgumentException(
@@ -40,18 +41,19 @@ public class PFMImage {
 							+ (3 * resolution)
 							+ " for a color image!");
 
+
 		this.width = width;
 		this.height = height;
-		this.gray = false;
+		this.gray = floats.length == resolution;
 
-		if (floats.length == resolution) {
-			this.floats = new float[3 * resolution];
-			for (int i = 0; i < resolution; ++i)
-				for (int j = 0; j < 3; ++j)
-					this.floats[3 * i + j] = floats[i];
-		} else {
-			this.floats = Arrays.copyOf(floats, floats.length);
-		}
+		// if (floats.length == resolution) {
+		// this.floats = new float[3 * resolution];
+		// for (int i = 0; i < resolution; ++i)
+		// for (int j = 0; j < 3; ++j)
+		// this.floats[3 * i + j] = floats[i];
+		// } else {
+		this.floats = Arrays.copyOf(floats, floats.length);
+		// }
 	}
 
 	/**
@@ -61,6 +63,15 @@ public class PFMImage {
 	 */
 	public float getFloat(int i) {
 		return floats[i];
+	}
+
+	/**
+	 * 
+	 * @param i
+	 * @return
+	 */
+	public void setFloat(int i, float value) {
+		floats[i] = value;
 	}
 
 	/**
