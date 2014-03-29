@@ -53,7 +53,7 @@ public class PFMViewer {
 
 		for (String filename : args) {
 			try {
-				System.out.println(args);
+				System.out.println(filename);
 				File file = new File(filename);
 				open(file);
 			} catch (Exception e) {
