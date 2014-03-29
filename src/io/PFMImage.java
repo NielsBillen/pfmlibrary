@@ -152,6 +152,73 @@ public class PFMImage {
 	}
 
 	/**
+	 * Converts this PFM image to a BufferedImage.
+	 * 
+	 * @param gamma
+	 *            The gamma correction factor (default 2.2).
+	 * @return a buffered image.
+	 */
+	public BufferedImage toScaledBufferedImage(double gamma) {
+		BufferedImage result = new BufferedImage(width, height,
+				BufferedImage.TYPE_INT_ARGB);
+
+		double inv_gamma = 1.0 / gamma;
+		int[] rgba = new int[] { 0, 0, 0, 255 };
+
+		double min = Double.POSITIVE_INFINITY;
+		double max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < width * height; ++i) {
+			floats[i] = (float) Math.pow(floats[i], inv_gamma);
+			if (floats[i] < min)
+				min = floats[i];
+			if (floats[i] > max)
+				max = floats[i];
+		}
+
+		System.out.println("minimum: " + min + "; maximum: " + max);
+		double inv_range = 1.0 / (max - min);
+		for (int i = 0; i < width * height; ++i)
+			floats[i] = (float) ((floats[i] - min) * inv_range);
+
+		for (int i = 0; i < width * height; ++i) {
+			if (gray) {
+				rgba[0] = clamp((int) (255.f * floats[i]), 0, 255);
+				rgba[1] = rgba[0];
+				rgba[2] = rgba[0];
+				result.getRaster().setPixel(i % width, height - 1 - i / width,
+						rgba);
+			} else {
+				rgba[0] = clamp((int) (255.f *getFloat(3 * i)), 0, 255);
+				rgba[1] = clamp((int) (255.f *getFloat(3 * i + 1)), 0, 255);
+				rgba[2] = clamp((int) (255.f *getFloat(3 * i + 2)), 0, 255);
+				result.getRaster().setPixel(i % width, height - 1 - i / width,
+						rgba);
+			}
+			for (int j = 0; j < 3; ++j)
+				if (rgba[j] < 0 || rgba[j] > 255)
+					throw new IllegalStateException();
+		}
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param value
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static int clamp(int value, int min, int max) {
+		if (value < min)
+			return min;
+		else if (value > max)
+			return max;
+		else
+			return value;
+	}
+
+	/**
 	 * Returns a gamma corrected float within a valid RGB range.
 	 * 
 	 * @param f
@@ -167,7 +234,6 @@ public class PFMImage {
 		else if (f > 1.0)
 			return 255;
 		else
-			return Math.min(255,
-					Math.max(0, (int) (255.0 * Math.pow(f, inv_gamma))));
+			return clamp((int) (255.0 * Math.pow(f, inv_gamma)), 0, 255);
 	}
 }
