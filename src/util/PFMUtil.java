@@ -23,41 +23,37 @@ public class PFMUtil {
 			throws IllegalArgumentException {
 		if (image1.width != image2.width || image1.height != image2.height)
 			throw new IllegalArgumentException(
-					"the images do not have matching size!" +image1.width+"x"+image1.height+" vs "+image2.width+"x"+image2.height);
+					"the images do not have matching size!" + image1.width
+							+ "x" + image1.height + " vs " + image2.width + "x"
+							+ image2.height);
 
 		BigDecimal decimal = new BigDecimal(0).setScale(100);
 
 		if (image1.gray == image2.gray) {
+			BigDecimal c1, c2, d;
 			for (int i = 0; i < image1.nbOfFloats(); ++i) {
-				BigDecimal c1 = new BigDecimal(image1.getFloat(i))
-						.setScale(100);
-				BigDecimal c2 = new BigDecimal(image2.getFloat(i))
-						.setScale(100);
-				BigDecimal d = c1.subtract(c2).pow(2);
+				c1 = new BigDecimal(image1.getFloat(i)).setScale(100);
+				c2 = new BigDecimal(image2.getFloat(i)).setScale(100);
+				d = c1.subtract(c2).pow(2);
 				decimal = decimal.add(d);
 			}
-			decimal = decimal.divide(new BigDecimal(image1.nbOfFloats()),
-					new MathContext(100, RoundingMode.HALF_DOWN));
 		} else {
-			throw new IllegalArgumentException();
-			// PFMImage grayImage = image1.gray ? image1 : image2;
-			// PFMImage colorImage = image1.gray ? image2 : image1;
-			//
-			// for (int i = 0; i < grayImage.nbOfFloats(); ++i) {
-			// BigDecimal c1 = new BigDecimal(grayImage.getFloat(i))
-			// .setScale(100);
-			// for (int j = 0; j < 3; ++j) {
-			// BigDecimal c2 = new BigDecimal(colorImage.getFloat(3 * i
-			// + j));
-			// BigDecimal d = c1.subtract(c2).pow(2);
-			// decimal = decimal.add(d);
-			// }
-			// }
-			// decimal = decimal.divide(new BigDecimal(3.f * image1.width
-			// * image1.height), new MathContext(100,
-			// RoundingMode.HALF_DOWN));
+			PFMImage gray = image1.gray ? image1 : image2;
+			PFMImage color = image1.gray ? image2 : image1;
+			BigDecimal grayColor, colorColor, d;
+			for (int i = 0; i < gray.nbOfFloats(); ++i) {
+				grayColor = new BigDecimal(gray.getFloat(i)).setScale(100);
+				for (int j = 0; j < 3; ++j) {
+					colorColor = new BigDecimal(color.getFloat(3 * i + j))
+							.setScale(100);
+					d = grayColor.subtract(colorColor).pow(2);
+					decimal = decimal.add(d);
+				}
+			}
 		}
-
+		int resolution = image1.width * image1.height;
+		decimal = decimal.divide(new BigDecimal(resolution, new MathContext(
+				100, RoundingMode.HALF_DOWN)));
 		return decimal.doubleValue();
 	}
 
@@ -83,17 +79,17 @@ public class PFMUtil {
 			throw new IllegalArgumentException(
 					"the images do not have matching size!");
 		if (image1.gray != image2.gray) {
-			// final PFMImage gray = image1.gray ? image1 : image2;
-			// final PFMImage color = image1.gray ? image2 : image1;
-			// final int nbOfFloats = color.nbOfFloats();
-			// float[] floats = new float[nbOfFloats];
-			//
-			// for (int i = 0; i < nbOfFloats; ++i) {
-			// float g = gray.getFloat(i / 3);
-			// floats[i] = Math.abs(color.getFloat(i) - g);
-			// }
-			// return new PFMImage(image1.width, image2.height, floats);
-			throw new IllegalArgumentException();
+			PFMImage gray = image1.gray ? image1 : image2;
+			PFMImage color = image1.gray ? image2 : image1;
+			final int nbOfFloats = color.nbOfFloats();
+			float[] floats = new float[nbOfFloats];
+
+			for (int i = 0; i < gray.nbOfFloats(); ++i)
+				for (int j = 0; j < 3; ++j)
+					floats[3 * i + j] = scale
+							* Math.abs(gray.getFloat(i)
+									- color.getFloat(3 * i + j));
+			return new PFMImage(image1.width, image1.height, floats);
 		} else {
 			final int nbOfFloats = image1.nbOfFloats();
 			float[] floats = new float[nbOfFloats];

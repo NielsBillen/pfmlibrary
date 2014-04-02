@@ -12,7 +12,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,44 +40,37 @@ public class PFMViewer {
 	 */
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			args = new File(".").list(new FilenameFilter() {
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see java.io.FilenameFilter#accept(java.io.File,
-				 * java.lang.String)
-				 */
-				@Override
-				public boolean accept(File arg0, String arg1) {
-					return arg1.endsWith(".pfm");
-				}
-			});
-
-			for (String filename : args) {
-				try {
-					System.out.println(args);
-					File file = new File(filename);
-					open(file);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
+			System.out
+					.println("usage: --gamma <double> --open <files> --convert <files> --r <directory>");
+			System.out.println(" --open    : open following .pfm files");
+			System.out.println(" --convert : convert following .pfm files to .png files");
+			System.out.println(" --r       : recursive traversal in a directory.");
+			System.out.println("             all .pfm files will be opened or converted");
+			System.out.println(" --gamma   : gamma correction");
 			return;
 		}
 
+		double gamma = 2.2;
 		int status = 0;
 		boolean recursive = false;
-		for (String argument : args) {
+		for (int i = 0; i < args.length; ++i) {
 			try {
-				if (argument.equals("--open"))
+				if (args[i].equals("--open"))
 					status = 0;
-				else if (argument.equals("--convert"))
+				else if (args[i].equals("--convert"))
 					status = 1;
-				else if (argument.equals("--r") || argument.equals("-r"))
+				else if (args[i].equals("--r") || args[i].equals("-r"))
 					recursive = true;
-				else {
-					File file = new File(argument);
+				else if (args[i].equals("--gamma")) {
+					try {
+						gamma = Double.parseDouble(args[i + 1]);
+						++i;
+					} catch (NumberFormatException e) {
+						System.out.println();
+
+					}
+				} else {
+					File file = new File(args[i]);
 					List<File> files;
 					if (recursive)
 						files = recursive(file);
@@ -92,7 +84,7 @@ public class PFMViewer {
 							open(f);
 						} else if (status == 1) {
 							PFMImage image = PFMReader.read(f);
-							BufferedImage buf = image.toBufferedImage(2.2);
+							BufferedImage buf = image.toBufferedImage(gamma);
 							ImageIO.write(buf, "png", new File(f
 									.getAbsolutePath().replace(".pfm", ".png")));
 							System.out.println("converted " + f.getName()

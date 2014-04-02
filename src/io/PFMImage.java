@@ -41,19 +41,10 @@ public class PFMImage {
 							+ (3 * resolution)
 							+ " for a color image!");
 
-
 		this.width = width;
 		this.height = height;
 		this.gray = floats.length == resolution;
-
-		// if (floats.length == resolution) {
-		// this.floats = new float[3 * resolution];
-		// for (int i = 0; i < resolution; ++i)
-		// for (int j = 0; j < 3; ++j)
-		// this.floats[3 * i + j] = floats[i];
-		// } else {
 		this.floats = Arrays.copyOf(floats, floats.length);
-		// }
 	}
 
 	/**
@@ -175,7 +166,6 @@ public class PFMImage {
 				max = floats[i];
 		}
 
-		System.out.println("minimum: " + min + "; maximum: " + max);
 		double inv_range = 1.0 / (max - min);
 		for (int i = 0; i < width * height; ++i)
 			floats[i] = (float) ((floats[i] - min) * inv_range);
@@ -188,9 +178,9 @@ public class PFMImage {
 				result.getRaster().setPixel(i % width, height - 1 - i / width,
 						rgba);
 			} else {
-				rgba[0] = clamp((int) (255.f *getFloat(3 * i)), 0, 255);
-				rgba[1] = clamp((int) (255.f *getFloat(3 * i + 1)), 0, 255);
-				rgba[2] = clamp((int) (255.f *getFloat(3 * i + 2)), 0, 255);
+				rgba[0] = clamp((int) (255.f * getFloat(3 * i)), 0, 255);
+				rgba[1] = clamp((int) (255.f * getFloat(3 * i + 1)), 0, 255);
+				rgba[2] = clamp((int) (255.f * getFloat(3 * i + 2)), 0, 255);
 				result.getRaster().setPixel(i % width, height - 1 - i / width,
 						rgba);
 			}
