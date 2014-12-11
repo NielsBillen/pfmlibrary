@@ -1,0 +1,1 @@
+This repository contains a Java library to read Portable Float Map images.
