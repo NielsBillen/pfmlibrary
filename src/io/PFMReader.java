@@ -38,6 +38,19 @@ import java.nio.ByteOrder;
  */
 public class PFMReader {
 	/**
+	 * Reads a Portable Float Map from the file specified by the given filename.
+	 * 
+	 * @param filename
+	 *            name of the file to read the Portable Float Map from.
+	 * @throws IOException
+	 *             when an exception occurs during the reading of the file.
+	 * @return an object containing the Portable Float Map image.
+	 */
+	public static PFMImage read(String filename) throws IOException {
+		return read(new File(filename));
+	}
+
+	/**
 	 * Reads a Portable Float Map from the given file.
 	 * 
 	 * @param file
