@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 /**
- * Represents a PFM image.
+ * The PFMImage describes an image in the Portable Float Map format.
  * 
  * @author Niels Billen
  * @version 1.0
@@ -13,22 +13,38 @@ public class PFMImage {
 	private final float[] floats;
 	public final int width;
 	public final int height;
-	public final boolean gray;
 
 	/**
+	 * Creates a new image with the given dimensions using the given array of
+	 * floats.
+	 * 
+	 * Let r = width*height, then the length of the float array can either be
+	 * equal to r or 3*r.
 	 * 
 	 * @param width
+	 *            The width of the image.
 	 * @param height
+	 *            The height of the image.
 	 * @param floats
+	 *            The floats to construct the image.
+	 * @throws IllegalArgumentException
+	 *             When the width or height are smaller than or equal to zero.
+	 * @throws IllegalArgumentException
+	 *             When the length of the float array is not equal to
+	 *             width*height or 3*width*height.
+	 * @throws NullPointerException
+	 *             When the given float array is null.
 	 */
 	public PFMImage(int width, int height, float[] floats)
-			throws IllegalArgumentException {
+			throws IllegalArgumentException, NullPointerException {
 		if (width <= 0)
 			throw new IllegalArgumentException(
 					"the width has to be larger than zero!");
 		if (height <= 0)
 			throw new IllegalArgumentException(
 					"the height has to be larger than zero!");
+		if (floats == null)
+			throw new NullPointerException("the given float array is null!");
 
 		int resolution = width * height;
 		if (resolution != floats.length && 3 * resolution != floats.length)
@@ -43,7 +59,6 @@ public class PFMImage {
 
 		this.width = width;
 		this.height = height;
-		this.gray = floats.length == resolution;
 		this.floats = Arrays.copyOf(floats, floats.length);
 	}
 
@@ -96,12 +111,12 @@ public class PFMImage {
 	 * @return
 	 */
 	public float[] getColorAt(int x, int y) {
-		if (gray) {
-			int o = y * width + x;
-			float c = getFloat(o);
+		if (isGrayScale()) {
+			final int o = y * width + x;
+			final float c = getFloat(o);
 			return new float[] { c, c, c };
 		} else {
-			int o = 3 * (y * width + x);
+			final int o = 3 * (y * width + x);
 			return new float[] { getFloat(o), getFloat(o + 1), getFloat(o + 2) };
 		}
 	}
@@ -121,7 +136,7 @@ public class PFMImage {
 		int[] rgba = new int[] { 0, 0, 0, 255 };
 
 		for (int i = 0; i < width * height; ++i) {
-			if (gray) {
+			if (isGrayScale()) {
 				rgba[0] = toInt(floats[i], inv_gamma);
 				rgba[1] = rgba[0];
 				rgba[2] = rgba[0];
@@ -171,7 +186,7 @@ public class PFMImage {
 			floats[i] = (float) ((floats[i] - min) * inv_range);
 
 		for (int i = 0; i < width * height; ++i) {
-			if (gray) {
+			if (isGrayScale()) {
 				rgba[0] = clamp((int) (255.f * floats[i]), 0, 255);
 				rgba[1] = rgba[0];
 				rgba[2] = rgba[0];

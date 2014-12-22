@@ -39,13 +39,22 @@ public class PFMViewer {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) {
+		// PFMImage first = PFMReader.read(new File("tree-scene-regular.pfm"));
+		// PFMImage second = PFMReader.read(new File("tree-scene-shadow.pfm"));
+		// PFMImage difference = PFMUtil.difference(first, second);
+		// ImageIO.write(difference.toBufferedImage(2.2), "png", new File(
+		// "difference"));
+
 		if (args.length == 0) {
 			System.out
 					.println("usage: --gamma <double> --open <files> --convert <files> --r <directory>");
 			System.out.println(" --open    : open following .pfm files");
-			System.out.println(" --convert : convert following .pfm files to .png files");
-			System.out.println(" --r       : recursive traversal in a directory.");
-			System.out.println("             all .pfm files will be opened or converted");
+			System.out
+					.println(" --convert : convert following .pfm files to .png files");
+			System.out
+					.println(" --r       : recursive traversal in a directory.");
+			System.out
+					.println("             all .pfm files will be opened or converted");
 			System.out.println(" --gamma   : gamma correction");
 			return;
 		}
@@ -71,6 +80,8 @@ public class PFMViewer {
 					}
 				} else {
 					File file = new File(args[i]);
+					if (!file.exists())
+						continue;
 					List<File> files;
 					if (recursive)
 						files = recursive(file);
