@@ -79,8 +79,8 @@ public class PFMUtil {
 		}
 
 		int resolution = image1.width * image1.height;
-		r = r.divide(new BigDecimal(resolution, new MathContext(100,
-				RoundingMode.HALF_DOWN)));
+		r = r.divide(new BigDecimal(resolution), new MathContext(100,
+				RoundingMode.HALF_DOWN));
 		return r.doubleValue();
 	}
 
