@@ -75,7 +75,7 @@ public class PFMViewer {
 			return;
 		}
 
-		double gamma = 2.2;
+		double gamma = 1;
 		int status = 0;
 		boolean recursive = false;
 		for (int i = 0; i < args.length; ++i) {
@@ -91,8 +91,8 @@ public class PFMViewer {
 						gamma = Double.parseDouble(args[i + 1]);
 						++i;
 					} catch (NumberFormatException e) {
-						System.out.println();
-
+						System.err.println("could not parse double from \""
+								+ gamma + "\"");
 					}
 				} else {
 					File file = new File(args[i]);
@@ -108,7 +108,7 @@ public class PFMViewer {
 
 					for (File f : files) {
 						if (status == 0) {
-							open(f);
+							open(f,gamma);
 						} else if (status == 1) {
 							PFMImage image = PFMReader.read(f);
 							BufferedImage buf = image.toBufferedImage(gamma);
@@ -159,8 +159,8 @@ public class PFMViewer {
 	 *            The PFM file to display.
 	 * @throws IOException
 	 */
-	private synchronized static void open(final File file) throws IOException {
-		final BufferedImage image = PFMReader.read(file).toBufferedImage(2.2);
+	private synchronized static void open(final File file, double gamma) throws IOException {
+		final BufferedImage image = PFMReader.read(file).toBufferedImage(gamma);
 
 		// Create the frame.
 		final JFrame frame = new JFrame("PFMViewer: " + file.getName());

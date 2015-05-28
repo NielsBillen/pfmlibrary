@@ -174,20 +174,19 @@ public class PFMImage {
 		BufferedImage result = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
 
-		double inv_gamma = 1.0 / gamma;
 		int[] rgba = new int[] { 0, 0, 0, 255 };
 
 		for (int i = 0; i < width * height; ++i) {
 			if (isGrayScale()) {
-				rgba[0] = toInt(floats[i], inv_gamma);
+				rgba[0] = toInt(getFloat(i), gamma);
 				rgba[1] = rgba[0];
 				rgba[2] = rgba[0];
 				result.getRaster().setPixel(i % width, height - 1 - i / width,
 						rgba);
 			} else {
-				rgba[0] = toInt(getFloat(3 * i), inv_gamma);
-				rgba[1] = toInt(getFloat(3 * i + 1), inv_gamma);
-				rgba[2] = toInt(getFloat(3 * i + 2), inv_gamma);
+				rgba[0] = toInt(getFloat(3 * i), gamma);
+				rgba[1] = toInt(getFloat(3 * i + 1), gamma);
+				rgba[2] = toInt(getFloat(3 * i + 2), gamma);
 				result.getRaster().setPixel(i % width, height - 1 - i / width,
 						rgba);
 			}
@@ -208,13 +207,12 @@ public class PFMImage {
 		BufferedImage result = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
 
-		double inv_gamma = 1.0 / gamma;
 		int[] rgba = new int[] { 0, 0, 0, 255 };
 
 		double min = Double.POSITIVE_INFINITY;
 		double max = Double.NEGATIVE_INFINITY;
 		for (int i = 0; i < width * height; ++i) {
-			floats[i] = (float) Math.pow(floats[i], inv_gamma);
+			floats[i] = (float) Math.pow(floats[i], gamma);
 			if (floats[i] < min)
 				min = floats[i];
 			if (floats[i] > max)
@@ -270,17 +268,17 @@ public class PFMImage {
 	 * 
 	 * @param f
 	 *            The float within the range [-Infinity,Infinity]
-	 * @param inv_gamma
+	 * @param gamma
 	 *            The inverse of the gamma. (I pass the inverse to avoid
 	 *            repeated divisions).
 	 * @return the gamma corrected float within the range [0,255].
 	 */
-	public static int toInt(double f, double inv_gamma) {
+	public static int toInt(double f, double gamma) {
 		if (f < 0.0)
 			return 0;
 		else if (f > 1.0)
 			return 255;
 		else
-			return clamp((int) (255.0 * Math.pow(f, inv_gamma)), 0, 255);
+			return clamp((int) (255.0 * Math.pow(f, 1.0 / gamma)), 0, 255);
 	}
 }
