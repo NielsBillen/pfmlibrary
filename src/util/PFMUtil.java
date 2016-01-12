@@ -50,7 +50,7 @@ public class PFMUtil {
 	 *             when the sizes of the images do not match.
 	 * @return the mean squared error between the two given images.
 	 */
-	public static double MSE(PFMImage image1, PFMImage image2)
+	public static BigDecimal MSE(PFMImage image1, PFMImage image2)
 			throws IllegalArgumentException {
 		if (image1 == null)
 			throw new NullPointerException("the first image is null!");
@@ -79,9 +79,8 @@ public class PFMUtil {
 		}
 
 		int resolution = image1.width * image1.height;
-		r = r.divide(new BigDecimal(resolution), new MathContext(100,
+		return r.divide(new BigDecimal(resolution), new MathContext(100,
 				RoundingMode.HALF_DOWN));
-		return r.doubleValue();
 	}
 
 	/**
