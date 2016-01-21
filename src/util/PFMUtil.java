@@ -62,7 +62,8 @@ public class PFMUtil {
 							+ "x" + image1.height + " vs " + image2.width + "x"
 							+ image2.height);
 		BigDecimal t, bc1, bc2;
-		BigDecimal r = new BigDecimal(0).setScale(100);
+		BigDecimal result = BigDecimal.ZERO
+				.setScale(50, RoundingMode.HALF_DOWN);
 		float[] c1, c2;
 		for (int y = 0; y < image1.height; ++y) {
 			for (int x = 0; x < image1.width; ++x) {
@@ -70,16 +71,18 @@ public class PFMUtil {
 				c2 = image2.getColorAt(x, y);
 
 				for (int i = 0; i < 3; ++i) {
-					bc1 = new BigDecimal(c1[i]).setScale(100);
-					bc2 = new BigDecimal(c2[i]).setScale(100);
+					bc1 = new BigDecimal(c1[i]).setScale(50,
+							RoundingMode.HALF_DOWN);
+					bc2 = new BigDecimal(c2[i]).setScale(50,
+							RoundingMode.HALF_DOWN);
 					t = bc1.subtract(bc2).pow(2);
-					r = r.add(t);
+					result = result.add(t);
 				}
 			}
 		}
 
 		int resolution = image1.width * image1.height;
-		return r.divide(new BigDecimal(resolution), new MathContext(100,
+		return result.divide(new BigDecimal(resolution), new MathContext(50,
 				RoundingMode.HALF_DOWN));
 	}
 
