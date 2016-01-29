@@ -61,29 +61,23 @@ public class PFMUtil {
 					"the images do not have matching size!" + image1.width
 							+ "x" + image1.height + " vs " + image2.width + "x"
 							+ image2.height);
-		BigDecimal t, bc1, bc2;
-		BigDecimal result = BigDecimal.ZERO
-				.setScale(50, RoundingMode.HALF_DOWN);
-		float[] c1, c2;
+		BigDecimal result = BigDecimal.ZERO;
+
 		for (int y = 0; y < image1.height; ++y) {
 			for (int x = 0; x < image1.width; ++x) {
-				c1 = image1.getColorAt(x, y);
-				c2 = image2.getColorAt(x, y);
+				float[] c1 = image1.getColorAt(x, y);
+				float[] c2 = image2.getColorAt(x, y);
 
 				for (int i = 0; i < 3; ++i) {
-					bc1 = new BigDecimal(c1[i]).setScale(50,
-							RoundingMode.HALF_DOWN);
-					bc2 = new BigDecimal(c2[i]).setScale(50,
-							RoundingMode.HALF_DOWN);
-					t = bc1.subtract(bc2).pow(2);
-					result = result.add(t);
+					BigDecimal bc1 = new BigDecimal(c1[i]);
+					BigDecimal bc2 = new BigDecimal(c2[i]);
+					result = result.add(bc1.subtract(bc2).pow(2));
 				}
 			}
 		}
 
-		int resolution = image1.width * image1.height;
-		return result.divide(new BigDecimal(resolution), new MathContext(50,
-				RoundingMode.HALF_DOWN));
+		BigDecimal resolution = new BigDecimal(image1.width * image1.height);
+		return result.divide(resolution, RoundingMode.HALF_DOWN);
 	}
 
 	/**
